@@ -66,6 +66,18 @@ ROBOTSTXT_OBEY = True
 #    'overthecap.pipelines.OverthecapPipeline': 300,
 #}
 
+# Configure Feed Export settings
+FEEDS = {
+    'overthecap.csv': {
+        'format': 'csv',
+        'encoding': 'utf-8',
+        'store_empty': False,
+        'fields': None,
+        'indent': 0,  # Not needed for CSV
+        'overwrite': True,
+    }
+}
+
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True

@@ -14,9 +14,7 @@ class OverthecapSpider(scrapy.Spider):
         current_datetime = datetime.now()
         print(f"Current date and time: {current_datetime}")
 
-
-        for url in self.start_urls:
-            yield scrapy.Request(url, callback=self.parse_contracts)
+        return scrapy.Request(self.start_urls[0], callback=self.parse_contracts)
 
     def parse_contracts(self, response):
         contract_table = response.xpath('//div[@class="contracts-container"]//table')
@@ -25,10 +23,12 @@ class OverthecapSpider(scrapy.Spider):
         # Extract column names from the table header
         header = contract_table.xpath('.//thead//tr[1]//th')
         column_names = [th.xpath('string()').get().strip() for th in header]
-        print("Column names:", column_names)
 
         for row in rows:
+            # Skip the header row
+            if row.xpath('.//th'):
+                continue
             cells = row.xpath('.//td')
-            cell_values = [cell.xpath('string()').get().strip() for cell in cells]
+            cell_values = [cell.xpath('string()').get().strip().replace('$', '').replace(',', '') for cell in cells]
             # print(cell_values)
             yield dict(zip(column_names, cell_values))
