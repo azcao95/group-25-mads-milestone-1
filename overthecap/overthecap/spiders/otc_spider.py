@@ -10,21 +10,15 @@ class OverthecapSpider(scrapy.Spider):
     ]
 
     def parse(self, response):
-        # Extract the current date and time
-        current_datetime = datetime.now()
-        print(f"Current date and time: {current_datetime}")
-
         return scrapy.Request(self.start_urls[0], callback=self.parse_contracts)
     
     def parse_contract_details(self, response):
-        print("Parsing contract details...")
-
-        pay_table = response.xpath('//div[@class="contract-container"]//table')
+        pay_table = response.xpath('//div[@class="contract-container"]//table[@class="contract salary-cap-history player-new"]')
         if not pay_table:
             print("No pay table found in the response.")
             return
         
-        headers = pay_table.xpath('.//tr[1]/th/text()').getall()
+        headers = pay_table.xpath('.//tr[1]/th').getall()
         if not headers:
             print("No headers found in the pay table.")
             return
@@ -35,18 +29,17 @@ class OverthecapSpider(scrapy.Spider):
             print("No target row found for the year 2024.")
             return
 
-        target_row_cells = target_row.xpath('.//td/text()').getall()
+        target_row_cells = target_row.xpath('.//td').getall()
         if not target_row_cells:
             print("No cells found in the target row.")
             return
         
         result = {}
+
         for header, cell in zip(headers, target_row_cells):
-            header = header.strip()
-            cell = cell.strip()
-            if header and cell:
-                result[header] = cell
-        print("Parsed result:", result)
+            header_text = re.sub('<[^<]+?>', '', header).strip().lower().replace(' ', '_').replace('%', 'percent')
+            cell_text = re.sub('<[^<]+?>', '', cell).strip().replace('$', '').replace(',', '')
+            result[header_text] = cell_text
 
         yield {
             'player_name': response.meta.get('player_name', 'Unknown'),
@@ -55,12 +48,10 @@ class OverthecapSpider(scrapy.Spider):
 
     def parse_contracts(self, response):
         contract_table = response.xpath('//div[@class="contracts-container"]//table')
-        headers = ['team', 'base_salary', 'guaranteed_salary', 'cap_number', 'cap_percent', 'cash_paid']
-
         rows = contract_table.xpath('.//tr')
         # Extract column names from the table header
 
-        for row in rows[1:10]:
+        for row in rows:
             # Skip the header row
             if row.xpath('.//th'):
                 continue
@@ -68,9 +59,8 @@ class OverthecapSpider(scrapy.Spider):
             link = row.xpath('.//td[1]//a/@href').get()
             if link:
                 # Construct the full URL for the contract details
-                full_url = response.urljoin(link)
+                full_url = response.urljoin(link)+'#contract-history'
                 player_name = row.xpath('.//td[1]//a/text()').get().strip()
-                print("Player Name: ", player_name)
                 if not player_name:
                     print("Player name not found in the row.")
                     continue
