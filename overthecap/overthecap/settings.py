@@ -1,4 +1,4 @@
-# Scrapy settings for overthecap project
+# Scrapy settings for comc_scraper project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,17 +7,17 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'overthecap'
+BOT_NAME = 'comc_scraper'
 
-SPIDER_MODULES = ['overthecap.spiders']
-NEWSPIDER_MODULE = 'overthecap.spiders'
+SPIDER_MODULES = ['comc_scraper.spiders']
+NEWSPIDER_MODULE = 'comc_scraper.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'overthecap (+http://www.yourdomain.com)'
+#USER_AGENT = 'comc_scraper (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -37,22 +37,20 @@ ROBOTSTXT_OBEY = True
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en',
+  'User-Agent': "Mozilla/5.0"
+}
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'overthecap.middlewares.OverthecapSpiderMiddleware': 543,
+#    'comc_scraper.middlewares.ComcScraperSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'overthecap.middlewares.OverthecapDownloaderMiddleware': 543,
-#}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -63,20 +61,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'overthecap.pipelines.OverthecapPipeline': 300,
+#    'comc_scraper.pipelines.ComcScraperPipeline': 300,
 #}
-
-# Configure Feed Export settings
-FEEDS = {
-    'overthecap.csv': {
-        'format': 'csv',
-        'encoding': 'utf-8',
-        'store_empty': False,
-        'fields': None,
-        'indent': 0,  # Not needed for CSV
-        'overwrite': True,
-    }
-}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -93,8 +79,27 @@ FEEDS = {
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+HTTPCACHE_ENABLED = False
+HTTPCACHE_EXPIRATION_SECS = 0
+HTTPCACHE_DIR = 'httpcache'
+HTTPCACHE_IGNORE_HTTP_CODES = [500, 502, 503, 504, 522, 524, 400, 408, 403, 429, 302]
+HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+# CONCURRENT_REQUESTS = 5
+DOWNLOAD_DELAY = 10
+RANDOMIZE_DOWNLOAD_DELAY=True
+AUTOTHROTTLE_ENABLED = True
+# The initial download delay
+AUTOTHROTTLE_START_DELAY = .5
+# The maximum download delay to be set in case of high latencies
+AUTOTHROTTLE_MAX_DELAY = 60
+# The average number of requests Scrapy should be sending in parallel to
+# each remote server
+AUTOTHROTTLE_TARGET_CONCURRENCY = 5.0
+# Enable showing throttling stats for every response received:
+AUTOTHROTTLE_DEBUG = True
+
+
+RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 400, 408, 403, 429, 302]
+RETRY_TIMES=15
