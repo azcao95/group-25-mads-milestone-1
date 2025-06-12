@@ -1,1 +1,10 @@
+nfl_data_py
+fuzzywuzzy
+python-Levenshtein
+networkx
+wordcloud
+seaborn
+mplcursors
+altair
+vega_datasets
 scrapy
